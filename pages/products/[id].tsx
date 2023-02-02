@@ -75,7 +75,7 @@ export default function Product_func(){
     })
 
     useEffect(()=>{
-        setCurrentArray(prev => init_hiddens(length))
+        setCurrentArray(() => init_hiddens(length))
     },[length])
 
     if (error) {
