@@ -22,7 +22,7 @@ export default function MainPage(){
 
     const {data, error} = useSWR<Product[]>(default_address, fetcher);
     const [value, setValue] = useState<string>()
-    if (error) return <p className="h-screen w-screen bg-red-700 text-black text-xl flex justify-center items-center">ERROR</p>;
+    if (error) return <p className=" h-screen w-screen bg-red-700 text-black text-xl flex justify-center items-center">ERROR</p>;
     const block = () => {
         if (!data) return <p className="h-screen w-screen text-black text-xl flex justify-center ">Loading...</p>;
         else {
@@ -31,7 +31,7 @@ export default function MainPage(){
                         <div key={item.id} className="max-[590px]:w-[150px] max-[590px]:h-auto m-2 p-2 flex flex-col justify-between items-center bg-white/20 hover:bg-white/40 rounded-2xl">
                             <div className="flex flex-col justify-center max-[590px]:w-[130px]">
                                 <div className="flex justify-center h-full w-full">
-                                    <Link className="max-[590px]:w-[115px]"  href={`/products/${item.id}` }>
+                                    <Link className="max-[590px]:w-[115px]"  href={`/products/${item.id}`}>
                                         <LazyLoadImage
                                             className={`w-[200px] h-[160px] object-cover ${result(item.id)} rounded-full max-[590px]:w-[115px] max-[590px]:h-[60px] `} src={item.thumbnail} effect="blur" alt={`product ${item.title}`}
                                         />

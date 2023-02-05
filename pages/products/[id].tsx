@@ -56,6 +56,7 @@ export const nextSlide = (array1:string[]) => {
     return now_array
 }
 
+
 export default function Product_func(){
     const {data, error} = useSWR<Product[]>(default_address, fetcher);
     const router = useRouter()
@@ -76,37 +77,37 @@ export default function Product_func(){
 
     useEffect(()=>{
         setCurrentArray(() => init_hiddens(length))
+        const divik = document.getElementById('imagine') as HTMLElement;
+        if(divik != null) {
+            setTimeout(function () {
+                divik.style.display = 'block'
+            }, 500);
+        }
     },[length])
 
-    if (error) {
-        return <p className="h-screen w-screen bg-red-700 text-black text-xl flex justify-center items-center">ERROR</p>
-    }
-    if (!data) {
-        return <p className="h-screen w-screen text-black text-xl flex justify-center">Loading...</p>
-    }
-    return (
-        <>
-            <Head>
-                <title>{name}</title>
-            </Head>
-            <main className="flex flex-col justify-center items-center m-10 mb-16">
-                <div className="max-w-5xl " >
-                    {data.map((item) => {
+
+
+
+
+
+    const block = () => {
+            return (
+                data?.map((item) => {
                         if (item.id == Number(id))  {
                             return (
-                                <div key={item.id} className="flex justify-center items-center flex-wrap">
-                                    <div className="h-[500px] max-[490px]:w-[340px] max-[490px]:h-[300px] flex items-center justify-center relative group">
-                                        <div className="relative flex">
-                                            {item.images.map((element, index) => {
+                                <div key={item.id} className="flex justify-center items-center flex-wrap ">
+                                    <div className="h-[500px] w-[500px] max-[490px]:w-[340px] max-[490px]:h-[300px]  flex items-center justify-center relative group">
+                                        <div id="imagine" className={`flex hidden delay-[500]`}>
+                                            {item.images.map((element, index) => { //image slider
                                                 return (
-                                                    <LazyLoadImage key={`${index}`} className={`${currentArray[index]} relative delay-500 animate-powlen
+                                                    <LazyLoadImage key={`${index}`} className={`${currentArray[index]} relative animate-powlen
                                                                    w-[500px] h-[500px] max-[490px]:w-[340px] max-[490px]:h-[300px] border-2 border-[rgba(222,133,214,1)] 
                                                                    rounded-2xl bg-center bg-cover duration-500 shadow-[inset_0px_0px_20px_10px_rgba(222,133,214,1)]`}
                                                                    src={element}  effect="blur" threshold={20}/>
                                                 )
                                             })}
                                         </div>
-                                        <div className="flex justify-between absolute w-full px-2">
+                                        <div  className="flex justify-between absolute w-full px-2">
                                             <div className="hidden max-[500px]:block group-hover:block text-2xl rounded-full p-2 bg-black/20 text-white cursor-pointer">
                                                 <BsChevronCompactLeft  onClick={() => {if (flag) {flag = false; setCurrentArray(prevSlide(currentArray)); flag = true}}} size={30} />
                                             </div>
@@ -124,8 +125,23 @@ export default function Product_func(){
                                         <li className="mt-3 rounded-3xl px-4 text-white bg-cyan-500 shadow-lg shadow-cyan-500/50">Цена: {item.price}$ (Скидка: {item.discountPercentage}%)</li>
                                     </ul>
                                 </div>
-                        )}
-                    })}
+                            )}
+                    })
+            )
+    }
+
+    if(!data) return (<p className="h-screen w-screen text-black text-xl flex justify-center items-center">Loading...</p>)
+    if (error) {
+        return <p className="h-screen w-screen bg-red-700 text-black text-xl flex justify-center items-center">ERROR</p>
+    }
+    return (
+        <>
+            <Head>
+                <title>{name}</title>
+            </Head>
+            <main className={`flex flex-col justify-center items-center m-10 mb-16 overflow-y-hidden max-[490px]:overflow-y-visible`}>
+                <div  className="max-w-5xl">
+                    {block()}
                 </div>
             </main>
         </>
