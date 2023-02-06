@@ -10,16 +10,19 @@ import 'react-lazy-load-image-component/src/effects/blur.css';
 import {default_address} from "../../components/helpers/setAddres";
 
 
+
 export const init_hiddens = (length:number) => {
-    const array:string[] = Array(length).fill("hidden")
-    array[0] = "block"
-    return array
+        const array: string[] = Array(length).fill("hidden")
+        array[0] = "block"
+        return array
+
 };
 
-export const prevSlide = (array1:string[]) => {
-    let now_array:string[] = [];
-    now_array.push(...array1)
-    array1.forEach(function (element, index) {
+export const prevSlide = (array1:string[], true_length:number) => {
+    const array2 = new Array(true_length - array1.length)
+    let now_array = array1.concat(array2.fill(""))
+
+    now_array.forEach(function (element, index) {
         if (index > 0) {
             if (array1[index] == "block") {
                 now_array[index] = "hidden"
@@ -29,18 +32,29 @@ export const prevSlide = (array1:string[]) => {
         else {
             if (array1[index] == "block") {
                 now_array[index] = "hidden"
-                now_array[array1.length - 1] = "block"
+                now_array[now_array.length - 1] = "block"
             }
         }
     });
     return now_array
 }
 
-export const nextSlide = (array1:string[]) => {
+export const nextSlide = (array1:string[], true_length:number) => {
     let now_array:string[] = [];
     now_array.push(...array1)
-    array1.forEach(function (element, index) {
-        if (index < array1.length - 1) {
+    if (array1.length === 1){
+        now_array.push("hidden")
+    }
+
+    if (array1.length < true_length){
+        now_array.push("hidden")
+    }
+    now_array.forEach(function (element, index) {
+        if (array1.length === 1){
+            now_array[0] = "hidden";
+            now_array[1] = "block";
+        }
+        else if (index < array1.length - 1) {
             if (array1[index] == "block") {
                 now_array[index] = "hidden"
                 now_array[index + 1] = "block"
@@ -57,10 +71,37 @@ export const nextSlide = (array1:string[]) => {
 }
 
 
+export const init_bool_count = (length:number)=> {
+    const array:boolean[] = Array(length).fill(false);
+    array.forEach(function (element, index) {
+        if (index < 1){
+            array[index] = true;
+        }
+    })
+    return array;
+}
+
+export const add_true_next = (array_bool:boolean[]) =>{
+    if (array_bool.filter(Boolean).length != array_bool.length) {
+        array_bool[array_bool.indexOf(false)] = true;
+    }
+    return array_bool
+}
+export const add_true_prev = (array_bool:boolean[]) => {
+    if (array_bool.filter(Boolean).length != array_bool.length) {
+        const new_array_bool = array_bool.reverse();
+        new_array_bool[new_array_bool.indexOf(false)] = true;
+        array_bool = new_array_bool.reverse()
+    }
+    return array_bool
+}
+
+
 export default function Product_func(){
     const {data, error} = useSWR<Product[]>(default_address, fetcher);
     const router = useRouter()
     const [currentArray, setCurrentArray] = useState<string[]>([])
+    const [bool_count, setBool_count] = useState<boolean[]>([])
 
     const {id} = router.query
 
@@ -76,18 +117,18 @@ export default function Product_func(){
     })
 
     useEffect(()=>{
-        setCurrentArray(() => init_hiddens(length))
-        const divik = document.getElementById('imagine') as HTMLElement;
-        if(divik != null) {
-            setTimeout(function () {
-                divik.style.display = 'block'
-            }, 500);
-        }
+        setBool_count(() => init_bool_count(length))
+        setCurrentArray(() => init_hiddens(init_bool_count(length).filter(function(value){return value}).length))
+        //bad fix with slider
+        // const divik = document.getElementById('imagine') as HTMLElement;
+        // if(divik != null) {
+        //     setTimeout(function () {
+        //         divik.style.display = 'block'
+        //     }, 500);
+        // }
     },[length])
-
-
-
-
+    //console.log(currentArray)
+    //console.log(bool_count)
 
 
     const block = () => {
@@ -95,28 +136,31 @@ export default function Product_func(){
                 data?.map((item) => {
                         if (item.id == Number(id))  {
                             return (
-                                <div key={item.id} className="flex justify-center items-center flex-wrap ">
+                                <div key={item.id} className="flex justify-center  flex-wrap ">
                                     <div className="h-[500px] w-[500px] max-[490px]:w-[340px] max-[490px]:h-[300px]  flex items-center justify-center relative group">
-                                        <div id="imagine" className={`flex hidden delay-[500]`}>
+                                        <div className={`flex`}>
                                             {item.images.map((element, index) => { //image slider
-                                                return (
-                                                    <LazyLoadImage key={`${index}`} className={`${currentArray[index]} relative animate-powlen
-                                                                   w-[500px] h-[500px] max-[490px]:w-[340px] max-[490px]:h-[300px] border-2 border-[rgba(222,133,214,1)] 
-                                                                   rounded-2xl bg-center bg-cover duration-500 shadow-[inset_0px_0px_20px_10px_rgba(222,133,214,1)]`}
-                                                                   src={element}  effect="blur" threshold={20}/>
-                                                )
+                                                if (bool_count[index]) {
+                                                    return (
+                                                        <LazyLoadImage key={`${index}`}
+                                                                       className={`${currentArray[index]} relative animate-powlen
+                                                                       w-[500px] h-[500px] max-[490px]:w-[340px] max-[490px]:h-[300px] border-2 border-[rgba(222,133,214,1)] 
+                                                                       rounded-2xl bg-center bg-cover duration-500 shadow-[inset_0px_0px_20px_10px_rgba(222,133,214,1)]`}
+                                                                       src={element} effect="blur" threshold={20}/>
+                                                    )
+                                                }
                                             })}
                                         </div>
                                         <div  className="flex justify-between absolute w-full px-2">
                                             <div className="hidden max-[500px]:block group-hover:block text-2xl rounded-full p-2 bg-black/20 text-white cursor-pointer">
-                                                <BsChevronCompactLeft  onClick={() => {if (flag) {flag = false; setCurrentArray(prevSlide(currentArray)); flag = true}}} size={30} />
+                                                <BsChevronCompactLeft  onClick={() => {if (flag) {flag = false; setCurrentArray(prevSlide(currentArray, bool_count.length)); setBool_count(add_true_prev(bool_count)); flag = true}}} size={30} />
                                             </div>
                                             <div className="hidden max-[500px]:block group-hover:block text-2xl rounded-full p-2 bg-black/20 text-white cursor-pointer">
-                                                <BsChevronCompactRight onClick={() => {if (flag) {flag = false; setCurrentArray(nextSlide(currentArray)); flag = true}}} size={30}/>
+                                                <BsChevronCompactRight onClick={() => {if (flag) {flag = false; setCurrentArray(nextSlide(currentArray, bool_count.length)); setBool_count(add_true_next(bool_count)); flag = true}}} size={30}/>
                                             </div>
                                         </div>
                                     </div>
-                                    <ul className="w-[500px] h-[500px] max-[490px]:w-[340px] max-[490px]:h-[300px] flex flex-col p-2 pl-8 max-[490px]:pl-2 ">
+                                    <ul className="w-[500px]  max-[490px]:w-[340px]   flex flex-col p-2 pl-8 max-[490px]:pl-2 max-[490px]:mt-2 ">
                                         <li className="rounded-3xl px-4 text-white bg-cyan-500 shadow-lg shadow-cyan-500/50 font-bold">Название: {item.title}</li>
                                         <li className="mt-3 rounded-3xl px-4 text-white bg-cyan-500 shadow-lg shadow-cyan-500/50">Категория: {item.category}</li>
                                         <li className="mt-3 rounded-3xl px-4 text-white bg-cyan-500 shadow-lg shadow-cyan-500/50">Бренд: {item.brand}</li>
@@ -139,7 +183,7 @@ export default function Product_func(){
             <Head>
                 <title>{name}</title>
             </Head>
-            <main className={`flex flex-col justify-center items-center m-10 mb-16 overflow-y-hidden max-[490px]:overflow-y-visible`}>
+            <main className={`flex flex-col justify-center items-center m-10 mb-16`}>
                 <div  className="max-w-5xl">
                     {block()}
                 </div>
