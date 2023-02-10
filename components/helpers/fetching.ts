@@ -1,8 +1,8 @@
-import axios from "axios";
+import axios from 'axios';
 
-const fetcher = async (url:string) => await axios
+const fetcher = async (url:string) => axios
     .get(url, {
-        withCredentials: false
+        withCredentials: false,
     })
     .then((res) => res.data.products);
 

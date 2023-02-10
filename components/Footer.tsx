@@ -6,5 +6,5 @@ export default function Footer() {
                 <div>InterShop©</div>
             </div>
         </footer>
-    )
-};
+    );
+}

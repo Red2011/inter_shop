@@ -1,13 +1,13 @@
-export default interface Product{
-    id:number,
+export default interface Product {
+    id: number,
     title: string,
     description: string,
-    price:number,
-    discountPercentage:number,
+    price: number,
+    discountPercentage: number,
     rating: number,
-    stock:number,
+    stock: number,
     brand: string,
     category: string,
     images: string[],
-    thumbnail: string
+    thumbnail: string,
 }
