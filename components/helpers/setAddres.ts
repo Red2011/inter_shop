@@ -1,11 +1,11 @@
 // eslint-disable-next-line import/no-mutable-exports
-let defaultAddress = 'https://dummyjson.com/products?limit=100';
-function SetAddress(newAddress:string) {
+let defaultAddress = 'https://dummyjson.com/products?limit=100'
+function SetAddress (newAddress: string): void {
     if (newAddress.length > 0) {
-        defaultAddress = newAddress;
+        defaultAddress = newAddress
     }
 }
 export {
     defaultAddress,
-    SetAddress,
-};
+    SetAddress
+}

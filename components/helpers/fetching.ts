@@ -1,9 +1,10 @@
-import axios from 'axios';
+import axios from 'axios'
+import type Product from './interface_product'
 
-const fetcher = async (url:string) => axios
+const fetcher = async (url: string): Promise<Product[]> => await axios
     .get(url, {
-        withCredentials: false,
+        withCredentials: false
     })
-    .then((res) => res.data.products);
+    .then((res) => res.data.products)
 
-export default fetcher;
+export default fetcher
